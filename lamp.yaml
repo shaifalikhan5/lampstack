@@ -1,0 +1,33 @@
+---
+- name: installing lamp server
+  hosts: all
+  become: yes
+  tasks:
+    - name: install apache2 on ubuntu
+      apt:
+        name: apache2
+        update_cache: yes
+        state: present
+    - name: start apache service
+      service:
+        name: apache2
+        enabled: yes  
+        state: started
+    - name: installing php module
+      apt:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - php
+        - php-common
+        - php-mysql
+        - php-gd
+        - php-cli
+    - name: copy the info.php to /var/www/html
+      copy:
+        src: info.php
+        dest: /var/www/html/info.php
+    - name: restart apache service
+      service:
+        name: apache2
+        state: restarted.            
